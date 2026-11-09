@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Agentic YouTube — AI Powered Video Creation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;overflow:hidden;background:#050505;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+body{font-family:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif}
+a{color:#fafafa;text-decoration:none}
+a:hover{color:#ffffff}
+:root{--u:calc(100vh / 1058);--uw:calc(100vw / 1487);--h:clamp(var(--u),calc(var(--u) * .65 + var(--uw) * .35),calc(var(--u) * 1.16));--ink:#fafafa;--muted:#a7a6a6;--nav:#b6b5b5;--strip:#8b8a8a}
+@supports (height:100dvh){:root{--u:calc(100dvh / 1058)}}
+@keyframes rise{from{opacity:0;transform:translateY(calc(14 * var(--u)))}}
+@keyframes riseNav{from{opacity:0;transform:translate(-50%,calc(-50% + 14 * var(--u)))}to{opacity:1;transform:translate(-50%,-50%)}}
+@keyframes fade{from{opacity:0}}
+.plate::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(5,5,5,0) 78.8%,rgba(5,5,5,.23) 79.6%,rgba(5,5,5,.45) 81.4%,rgba(5,5,5,.75) 83.3%,rgba(5,5,5,.84) 85.2%,rgba(5,5,5,.888) 88%,rgba(5,5,5,.905) 91%,rgba(5,5,5,.96) 95%,#050505 100%),linear-gradient(to right,#050505 calc(50% - 746 * var(--u)),transparent calc(50% - 676 * var(--u)),transparent calc(50% + 676 * var(--u)),#050505 calc(50% + 746 * var(--u)))}
+.no-letterbox .plate::after{background:linear-gradient(to bottom,rgba(5,5,5,0) 78.8%,rgba(5,5,5,.23) 79.6%,rgba(5,5,5,.45) 81.4%,rgba(5,5,5,.75) 83.3%,rgba(5,5,5,.84) 85.2%,rgba(5,5,5,.888) 88%,rgba(5,5,5,.905) 91%,rgba(5,5,5,.96) 95%,#050505 100%)}
+.no-anim *{animation:none !important}
+.hide-strip .logos{display:none !important}
+.burger{display:none}
+.menu{position:absolute;inset:0;z-index:40;opacity:0;visibility:hidden;transition:opacity .42s cubic-bezier(.22,1,.36,1),visibility .42s cubic-bezier(.22,1,.36,1)}
+.is-open .menu{opacity:1;visibility:visible}
+.menu .r{opacity:0;transform:translateY(calc(14 * var(--u)));transition:opacity .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1)}
+.is-open .menu .r{opacity:1;transform:translateY(0)}
+.is-open .menu .r1{transition-delay:.06s}
+.is-open .menu .r2{transition-delay:.10s}
+.is-open .menu .r3{transition-delay:.16s}
+.is-open .menu .r4{transition-delay:.22s}
+.is-open .menu .r5{transition-delay:.28s}
+.is-open .menu .r6{transition-delay:.34s}
+.is-open .b1{transform:translateY(calc(4.3 * var(--u))) rotate(45deg)}
+.is-open .b2{transform:translateY(calc(-4.3 * var(--u))) rotate(-45deg)}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition-duration:.001s !important}}
+@media (max-aspect-ratio:11/10){
+:root{--m:min(calc(100vw / 430),1.34px);--u:var(--m);--h:var(--m)}
+.plate-video{left:0 !important;top:0 !important;width:100% !important;height:100% !important;transform:none !important;object-position:43% center}
+.plate::after,.no-letterbox .plate::after{background:linear-gradient(to right,rgba(5,5,5,.86),rgba(5,5,5,.66) 42%,rgba(5,5,5,.20) 78%,rgba(5,5,5,.10) 100%),linear-gradient(to bottom,rgba(5,5,5,.72),rgba(5,5,5,.34) 24%,rgba(5,5,5,.34) 56%,rgba(5,5,5,.80) 82%,rgba(5,5,5,.97) 94%,#050505 100%)}
+.topbar{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:calc(20 * var(--m)) calc(22 * var(--m))}
+.brand{position:static !important;width:calc(28 * var(--m)) !important;height:calc(28 * var(--m)) !important}
+.links,.pill-nav{display:none !important}
+.burger{display:flex !important}
+.hero{position:absolute;left:0;right:0;bottom:calc(215 * var(--m));padding:0 calc(24 * var(--m))}
+.headline{position:static !important;font-size:calc(46 * var(--m)) !important;line-height:calc(51 * var(--m)) !important;letter-spacing:0 !important;white-space:normal !important}
+.headline span{display:inline !important}
+.sub{position:static !important;margin:calc(18 * var(--m)) 0 0 !important;font-size:calc(15.5 * var(--m)) !important;line-height:calc(24 * var(--m)) !important;word-spacing:normal !important}
+.sub span{display:inline !important;white-space:normal !important}
+.actions{position:static !important;display:flex;flex-direction:column;align-items:flex-start;gap:calc(16 * var(--m));margin-top:calc(28 * var(--m))}
+.pill-cta{position:static !important;width:calc(196 * var(--m)) !important;height:calc(52 * var(--m)) !important;font-size:calc(16.5 * var(--m)) !important}
+.ghost{position:static !important;font-size:calc(16 * var(--m)) !important}
+.logos{position:absolute !important;left:calc(24 * var(--m)) !important;right:calc(24 * var(--m)) !important;bottom:calc(46 * var(--m)) !important;top:auto !important;width:auto !important;transform:none !important;display:grid;grid-template-columns:1fr 1fr;gap:calc(26 * var(--m)) calc(14 * var(--m))}
+.lg{display:flex;align-items:center;gap:calc(9 * var(--m))}
+.lg-word{font-size:calc(14.5 * var(--m)) !important}
+}
+@media (min-width:600px) and (max-aspect-ratio:11/10){
+:root{--m:min(calc(100vw / 860),calc(100vh / 760),1.25px)}
+.plate-video{object-position:44% center}
+.plate::after,.no-letterbox .plate::after{background:linear-gradient(to right,rgba(5,5,5,.84),rgba(5,5,5,.60) 42%,rgba(5,5,5,.16) 78%,rgba(5,5,5,.06) 100%),linear-gradient(to bottom,rgba(5,5,5,.66),rgba(5,5,5,.28) 24%,rgba(5,5,5,.30) 56%,rgba(5,5,5,.78) 82%,rgba(5,5,5,.96) 94%,#050505 100%)}
+.headline span{display:block !important}
+.logos{grid-template-columns:repeat(4,1fr) !important}
+}
+</style>
+</helmet>
+<div class="stage {{mods}}" style="position:fixed;inset:0;overflow:hidden;background:#050505;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)">
+  <div class="plate" style="position:absolute;inset:0;overflow:hidden">
+    <video class="plate-video" autoplay="autoplay" muted="muted" loop="loop" playsinline="playsinline" preload="auto" aria-hidden="true" style="position:absolute;left:50%;top:calc(1 * var(--u));width:calc(1492 * var(--u));height:calc(1054 * var(--u));transform:translateX(calc(-50% - 0.5 * var(--u)));object-fit:cover;pointer-events:none">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260808_112712_da9d53df-6d27-4b12-bdf6-aa9dc2622bdf.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <header class="topbar" style="position:absolute;left:0;right:0;top:0;z-index:20">
+    <a class="brand" href="#top" aria-label="Home" style="position:absolute;left:calc(75 * var(--u));top:calc(30 * var(--u));width:calc(38 * var(--u));height:calc(42 * var(--u));display:block;animation:rise .8s cubic-bezier(.22,1,.36,1) both">
+      <svg viewBox="0 0 38 42" width="100%" height="100%" aria-hidden="true" style="display:block;overflow:visible">
+        <defs>
+          <linearGradient id="agy1" x1="4" y1="2" x2="34" y2="40" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#cfcfcf" />
+            <stop offset=".42" stop-color="#8e8e8e" />
+            <stop offset=".62" stop-color="#3f3f3f" />
+            <stop offset="1" stop-color="#e6e6e6" />
+          </linearGradient>
+        </defs>
+        <path d="M6 3.6 L30 20.4 L6 37.2 Z" fill="url(#agy1)" />
+        <path d="M6 3.6 L34 8.2 M30 20.4 L34 8.2 M30 20.4 L34 33.6 M6 37.2 L34 33.6" stroke="#8b8a8a" stroke-width="1.1" fill="none" />
+        <circle cx="34" cy="8.2" r="2.9" fill="#fdfdfd" />
+        <circle cx="34" cy="33.6" r="2.9" fill="#fdfdfd" />
+      </svg>
+    </a>
+    <nav class="links" aria-label="Primary" style="position:absolute;left:50%;top:calc(51 * var(--u));transform:translate(-50%,-50%);display:flex;align-items:center;font-size:calc(19 * var(--u));font-weight:400;color:var(--nav);white-space:nowrap;animation:riseNav .8s cubic-bezier(.22,1,.36,1) both">
+      <a href="#how" style="color:var(--nav);margin-right:calc(24.5 * var(--u))">How It Works</a>
+      <a href="#features" style="color:var(--nav);margin-right:calc(23.5 * var(--u))">Features</a>
+      <a href="#tech" style="color:var(--nav);margin-right:calc(26 * var(--u))">Technology</a>
+      <a href="#about" style="color:var(--nav)">About</a>
+    </nav>
+    <a class="pill pill-nav" href="#create" style="position:absolute;right:calc(75.4 * var(--u));top:calc(27 * var(--u));width:calc(196 * var(--u));height:calc(49 * var(--u));display:flex;align-items:center;justify-content:center;background:#ffffff;color:#050505;border-radius:999px;font-size:calc(20.6 * var(--u));font-weight:500;animation:rise .8s cubic-bezier(.22,1,.36,1) both">
+      <span style="display:block;transform:translateY(calc(1 * var(--u)))">Create a Video</span>
+    </a>
+    <button class="burger" id="burger" type="button" aria-label="{{ burgerLabel }}" aria-expanded="{{ expanded }}" aria-controls="menu" onClick="{{ toggle }}" style="position:relative;z-index:60;width:calc(46 * var(--u));height:calc(46 * var(--u));border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);backdrop-filter:blur(14px);align-items:center;justify-content:center;flex-direction:column;gap:calc(6 * var(--u));cursor:pointer;padding:0">
+      <i class="b1" style="display:block;width:calc(17 * var(--u));height:1.5px;background:#fafafa;transition:transform .3s cubic-bezier(.22,1,.36,1)"></i>
+      <i class="b2" style="display:block;width:calc(17 * var(--u));height:1.5px;background:#fafafa;transition:transform .3s cubic-bezier(.22,1,.36,1)"></i>
+    </button>
+  </header>
+
+  <nav class="menu" id="menu" aria-label="Menu" aria-hidden="{{ menuHidden }}" style="background:linear-gradient(180deg,rgba(5,5,5,.92),rgba(5,5,5,.985));backdrop-filter:blur(18px);display:flex">
+    <div class="menu-inner" style="display:flex;flex-direction:column;justify-content:center;width:100%;padding:0 calc(26 * var(--u))">
+      <p class="menu-eyebrow r r1" style="margin:0 0 calc(22 * var(--u));font-size:calc(13 * var(--u));letter-spacing:calc(2.4 * var(--u));text-transform:uppercase;color:var(--strip)">Menu</p>
+      <ul class="menu-list" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:calc(14 * var(--u))">
+        <li class="r r2"><a href="#how" onClick="{{ close }}" style="display:flex;align-items:center;justify-content:space-between;font-size:max(25px,calc(31 * var(--u)));font-weight:400;color:var(--ink)">How It Works<span style="font-size:.5em;color:var(--strip)">›</span></a></li>
+        <li class="r r3"><a href="#features" onClick="{{ close }}" style="display:flex;align-items:center;justify-content:space-between;font-size:max(25px,calc(31 * var(--u)));font-weight:400;color:var(--ink)">Features<span style="font-size:.5em;color:var(--strip)">›</span></a></li>
+        <li class="r r4"><a href="#tech" onClick="{{ close }}" style="display:flex;align-items:center;justify-content:space-between;font-size:max(25px,calc(31 * var(--u)));font-weight:400;color:var(--ink)">Technology<span style="font-size:.5em;color:var(--strip)">›</span></a></li>
+        <li class="r r5"><a href="#about" onClick="{{ close }}" style="display:flex;align-items:center;justify-content:space-between;font-size:max(25px,calc(31 * var(--u)));font-weight:400;color:var(--ink)">About<span style="font-size:.5em;color:var(--strip)">›</span></a></li>
+      </ul>
+      <div class="menu-foot r r6" style="display:flex;flex-direction:column;align-items:flex-start;gap:calc(16 * var(--u));margin-top:calc(40 * var(--u))">
+        <a class="pill" href="#create" onClick="{{ close }}" style="display:flex;align-items:center;justify-content:center;gap:calc(9 * var(--u));width:calc(200 * var(--u));height:calc(52 * var(--u));background:#ffffff;color:#050505;border-radius:999px;font-size:calc(17 * var(--u));font-weight:500">
+          <svg viewBox="0 0 10 12" aria-hidden="true" style="width:calc(9 * var(--u));height:calc(11 * var(--u));display:block"><path d="M0 0 L10 6 L0 12 Z" fill="#050505" /></svg>
+          <span style="display:block">Create a Video</span>
+        </a>
+        <a class="ghost" href="#how" onClick="{{ close }}" style="font-size:calc(16 * var(--u));font-weight:500;color:#ffffff">Explore Workflow</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="hero" style="position:absolute;left:0;right:0;top:0;z-index:10">
+    <h1 class="headline" style="position:absolute;left:calc(75.5 * var(--u));top:calc(230.5 * var(--u));margin:0;font-size:calc(71.6 * var(--h));line-height:calc(80.5 * var(--h));font-weight:400;letter-spacing:calc(0.3 * var(--h));color:var(--ink);white-space:nowrap;animation:rise .9s cubic-bezier(.22,1,.36,1) .06s both">
+      <span style="display:block">From Prompt</span>
+      <span style="display:block">to Published Video</span>
+    </h1>
+    <p class="sub" style="position:absolute;left:calc(75.5 * var(--u));top:calc(230.5 * var(--u) + 189 * var(--h));margin:0;font-size:calc(20.7 * var(--h));line-height:calc(23.5 * var(--h));font-weight:400;word-spacing:calc(1.8 * var(--h));color:var(--muted);animation:rise .9s cubic-bezier(.22,1,.36,1) .14s both">
+      <span style="display:block;white-space:nowrap">Autonomous AI agents that transform your ideas into</span>
+      <span style="display:block;white-space:nowrap">complete YouTube videos — from script to upload.</span>
+    </p>
+    <div class="actions">
+      <a class="pill pill-cta" href="#create" style="position:absolute;left:calc(74.9 * var(--u));top:calc(230.5 * var(--u) + 264.5 * var(--h));width:calc(196 * var(--h));height:calc(50 * var(--h));display:flex;align-items:center;justify-content:center;gap:calc(9 * var(--h));background:#ffffff;color:#050505;border-radius:999px;font-size:calc(20.6 * var(--h));font-weight:500;animation:rise .9s cubic-bezier(.22,1,.36,1) .22s both">
+        <svg viewBox="0 0 10 12" aria-hidden="true" style="width:calc(9 * var(--h));height:calc(11 * var(--h));display:block"><path d="M0 0 L10 6 L0 12 Z" fill="#050505" /></svg>
+        <span style="display:block;transform:translateY(calc(1 * var(--h)))">Create a Video</span>
+      </a>
+      <a class="ghost" href="#how" style="position:absolute;left:calc(74.9 * var(--u) + 240 * var(--h));top:calc(230.5 * var(--u) + 279.5 * var(--h));font-size:calc(20.6 * var(--h));font-weight:500;letter-spacing:calc(0.12 * var(--h));color:#ffffff;animation:rise .9s cubic-bezier(.22,1,.36,1) .22s both">Explore Workflow</a>
+    </div>
+  </main>
+
+  <div class="logos" style="position:absolute;left:50%;top:calc(988 * var(--u));width:calc(920 * var(--u));transform:translateX(calc(-50% + 20 * var(--u)));z-index:10;display:flex;align-items:center;justify-content:space-between;color:var(--strip);animation:fade 1.1s cubic-bezier(.22,1,.36,1) .34s both">
+    <div class="lg" style="display:flex;align-items:center;gap:calc(11 * var(--u))">
+      <svg viewBox="0 0 30 30" aria-hidden="true" style="width:calc(27 * var(--u));height:calc(27 * var(--u));display:block;flex:0 0 auto"><g fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="10.5" cy="15" r="7.5" /><circle cx="20.5" cy="15" r="7.5" /></g></svg>
+      <span class="lg-word" style="font-size:calc(18 * var(--u));font-weight:700;letter-spacing:calc(0.2 * var(--u))">LangChain</span>
+    </div>
+    <div class="lg" style="display:flex;align-items:center;gap:calc(11 * var(--u))">
+      <svg viewBox="0 0 30 30" aria-hidden="true" style="width:calc(27 * var(--u));height:calc(27 * var(--u));display:block;flex:0 0 auto"><g stroke="currentColor" stroke-width="2.2" fill="none"><path d="M8 8 L22 15 L8 22" /></g><circle cx="8" cy="8" r="3.4" fill="currentColor" /><circle cx="8" cy="22" r="3.4" fill="currentColor" /><circle cx="23" cy="15" r="3.4" fill="currentColor" /></svg>
+      <span class="lg-word" style="font-size:calc(18 * var(--u));font-weight:700;letter-spacing:calc(0.2 * var(--u))">LangGraph</span>
+    </div>
+    <div class="lg" style="display:flex;align-items:center;gap:calc(11 * var(--u))">
+      <svg viewBox="0 0 30 30" aria-hidden="true" style="width:calc(27 * var(--u));height:calc(27 * var(--u));display:block;flex:0 0 auto"><g fill="none" stroke="currentColor"><circle cx="15" cy="15" r="12" stroke-width="2.4" /><circle cx="15" cy="15" r="6" stroke-width="2.4" /></g><circle cx="15" cy="15" r="2.2" fill="currentColor" /></svg>
+      <span class="lg-word" style="font-size:calc(18 * var(--u));font-weight:700;letter-spacing:calc(0.2 * var(--u))">Stable Diffusion</span>
+    </div>
+    <div class="lg" style="display:flex;align-items:center;gap:calc(11 * var(--u))">
+      <svg viewBox="0 0 34 26" aria-hidden="true" style="width:calc(30 * var(--u));height:calc(23 * var(--u));display:block;flex:0 0 auto"><rect x="1.5" y="1.5" width="31" height="23" rx="6" fill="none" stroke="currentColor" stroke-width="2.5" /><path d="M14 8.5 L21.5 13 L14 17.5 Z" fill="currentColor" /></svg>
+      <span class="lg-word" style="font-size:calc(18 * var(--u));font-weight:700;letter-spacing:calc(0.2 * var(--u))">YouTube API</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;entranceAnimations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;sideLetterbox&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;showTechStrip&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { open: false };
+  componentDidMount() {
+    this._key = (e) => { if (e.key === "Escape") this.setState({ open: false }); };
+    this._rs = () => {
+      if (window.innerWidth / window.innerHeight > 1.1 && this.state.open) this.setState({ open: false });
+    };
+    window.addEventListener("keydown", this._key);
+    window.addEventListener("resize", this._rs);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this._key);
+    window.removeEventListener("resize", this._rs);
+  }
+  renderVals() {
+    const p = this.props;
+    const mods = [
+      this.state.open ? "is-open" : "",
+      (p.entranceAnimations ?? true) ? "" : "no-anim",
+      (p.sideLetterbox ?? true) ? "" : "no-letterbox",
+      (p.showTechStrip ?? true) ? "" : "hide-strip"
+    ].filter(Boolean).join(" ");
+    return {
+      mods,
+      open: this.state.open,
+      menuHidden: !this.state.open,
+      burgerLabel: this.state.open ? "Close menu" : "Open menu",
+      expanded: this.state.open ? "true" : "false",
+      toggle: () => this.setState((s) => ({ open: !s.open })),
+      close: () => this.setState({ open: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!-- Navigation: one shared bar for the whole platform (shared/app-nav). -->
+<app-nav></app-nav>
+
+<div class="profile-page">
+  <app-agent-backdrop [density]="0.5"></app-agent-backdrop>
+
+  <div class="profile-wrapper">
+    <!-- Hero Section with Profile Info -->
+    <div class="profile-hero">
+      <span class="hero-stream" aria-hidden="true"></span>
+
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <div class="avatar-circle">
+            <span class="avatar-initial">{{ user?.name?.charAt(0) || 'U' }}</span>
+          </div>
+          <div class="status-indicator"></div>
+        </div>
+
+        <div class="profile-info">
+          <h1 class="profile-name">{{ user?.name || 'User' }}</h1>
+          <p class="profile-email">{{ user?.email || 'email@example.com' }}</p>
+          <div class="profile-badges">
+            <span class="badge badge-role">{{ user?.role || 'Member' }}</span>
+            <span class="badge badge-credits">
+              <svg class="credit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v12M6 12h12"/>
+              </svg>
+              {{ user?.credits || 0 }} Credits
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <app-agent-loader *ngIf="loading" label="Loading profile"></app-agent-loader>
+
+      <div *ngIf="error" class="error-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p>{{ error }}</p>
+      </div>
+    </div>
+
+    <!-- Subscription History Section -->
+    <div class="content-section ay-card" *ngIf="!loading" appReveal>
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Subscription History
+        </h2>
+      </div>
+
+      <div class="table-container">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>Amount</th>
+              <th>Credits</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sub of subscriptions; let i = index" [style.animation-delay]="(i * 0.1) + 's'">
+              <td>
+                <span class="plan-name">{{ sub.planName }}</span>
+              </td>
+              <td>
+                <span class="amount">${{ sub.price }}</span>
+              </td>
+              <td>
+                <span class="credits-badge">{{ sub.credits }}</span>
+              </td>
+              <td>
+                <span class="date">{{ sub.subscribedAt | date:'MMM d, y' }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="subscriptions?.length === 0" class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <p>No subscription history yet</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- My Videos Section -->
+    <div class="content-section ay-card" appReveal [revealDelay]="80">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polygon points="23 7 16 12 23 17 23 7"/>
+            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+          </svg>
+          My Created Videos
+        </h2>
+      </div>
+
+      <app-agent-loader *ngIf="loading" label="Loading videos"></app-agent-loader>
+
+      <div *ngIf="error" class="error-state">
+        <p>{{ error }}</p>
+      </div>
+
+      <!-- Gallery: search + animated video cards -->
+      <div *ngIf="!loading && videos?.length" class="gallery-tools">
+        <label class="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+          <input type="search" name="videoSearch" [(ngModel)]="query" placeholder="Search your prompts" aria-label="Search your videos" />
+          <span class="search-count">{{ filteredVideos.length }}/{{ videos.length }}</span>
+        </label>
+      </div>
+
+      <div *ngIf="!loading && videos?.length" class="gallery">
+        <article
+          *ngFor="let v of filteredVideos; let i = index; trackBy: trackVideo"
+          class="video-card ay-card ay-card--lift ay-spot"
+          appReveal
+          [revealDelay]="(i % 6) * 70">
+          <div class="thumb">
+            <img
+              *ngIf="v.youtubeVideoId"
+              [src]="'https://i.ytimg.com/vi/' + v.youtubeVideoId + '/mqdefault.jpg'"
+              alt=""
+              loading="lazy" />
+            <span *ngIf="!v.youtubeVideoId" class="thumb-frames" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="thumb-play" aria-hidden="true"></span>
+            <span class="thumb-index">#{{ videoNumber(v) }}</span>
+            <span *ngIf="v.status" class="status" [attr.data-status]="v.status">{{ v.status }}</span>
+          </div>
+          <div class="video-body">
+            <p class="video-prompt">{{ v.prompt }}</p>
+            <div class="video-meta">
+              <span class="date">{{ v.createdAt | date:'MMM d, y · h:mm a' }}</span>
+              <a
+                *ngIf="v.youtubeVideoId"
+                class="yt-link"
+                [href]="'https://youtu.be/' + v.youtubeVideoId"
+                target="_blank"
+                rel="noopener">Watch ↗</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div *ngIf="!loading && videos?.length && !filteredVideos.length" class="empty-state empty-state--search">
+        <p>No videos match “{{ query }}”</p>
+      </div>
+
+      <div *ngIf="!loading && videos?.length === 0" class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+          <line x1="7" y1="2" x2="7" y2="22"/>
+          <line x1="17" y1="2" x2="17" y2="22"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <line x1="2" y1="7" x2="7" y2="7"/>
+          <line x1="2" y1="17" x2="7" y2="17"/>
+          <line x1="17" y1="17" x2="22" y2="17"/>
+          <line x1="17" y1="7" x2="22" y2="7"/>
+        </svg>
+        <p>You haven't created any videos yet</p>
+        <button class="cta-button ay-btn ay-btn-primary">
+          <svg class="ay-btn-icon" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 L10 6 L0 12 Z" fill="currentColor" /></svg>
+          <span>Create Your First Video</span>
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <div *ngIf="!loading && videos?.length" class="pagination">
+        <button class="pagination-btn ay-btn ay-btn-outline ay-btn-sm" (click)="fetch(page - 1)" [disabled]="page <= 1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Previous
+        </button>
+
+        <div class="pagination-info">
+          <span class="current-page">Page {{ page }}</span>
+          <span class="total-items">{{ total }} total videos</span>
+        </div>
+
+        <button class="pagination-btn ay-btn ay-btn-outline ay-btn-sm" (click)="fetch(page + 1)" [disabled]="page * limit >= total">
+          Next
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <ng-template #loadingTpl>
+      <app-agent-loader label="Loading history"></app-agent-loader>
+    </ng-template>
+  </div>
+</div>

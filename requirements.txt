@@ -1,0 +1,68 @@
+langgraph
+langsmith
+python-dotenv
+ipykernel
+langchain
+langchain_groq
+langchain_community
+langchain_experimental
+ipython
+wikipedia
+arxiv
+cassio
+tiktoken
+langchainhub
+chromadb
+tavily-python
+langchain-text-splitters
+langchain_huggingface
+google-search-results
+faiss-cpu
+sentence_transformers
+pypdf
+youtube_search_python==1.6.6
+streamlit
+duckduckgo-search
+beautifulsoup4
+google-api-python-client
+utils
+youtube_transcript_api
+#TTS
+gTTS
+soundfile
+torch
+accelerate
+pillow
+requests
+huggingface_hub
+moviepy
+edge-tts
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
+
+# --- Agentic AI core rebuild (Stage 1: research/RAG + critic loop) ---
+langgraph-checkpoint-sqlite
+langchain-ollama
+ddgs
+pydantic
+
+# --- Stage 2: local voice ---
+coqui-tts
+piper-tts
+pydub
+
+# --- Stage 3: local image generation + CLIP QA ---
+diffusers
+open_clip_torch
+
+# --- Stage 4: word-level captions ---
+faster-whisper
+
+# --- Stage 5: mood music, QA gate, observability ---
+transformers
+langfuse
+
+# NOTE: torch must be a CUDA build for stages 2/3/4 to run on GPU, e.g.:
+#   pip install --index-url https://download.pytorch.org/whl/cu128 torch==2.10.0+cu128 --force-reinstall --no-deps
+

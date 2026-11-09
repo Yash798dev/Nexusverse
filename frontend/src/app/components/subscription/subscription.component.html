@@ -1,0 +1,33 @@
+<!-- Navigation: one shared bar for the whole platform (shared/app-nav). -->
+<app-nav></app-nav>
+
+<div class="plans-page">
+  <app-agent-backdrop [density]="0.6"></app-agent-backdrop>
+
+  <div class="plans-container" *ngIf="!loading; else loadingTpl">
+    <div class="plans-grid">
+      <div
+        class="plan-card ay-card ay-card--lift"
+        *ngFor="let p of plans; let i = index"
+        appReveal
+        [revealDelay]="i * 110">
+        <h3>{{ p.name }}</h3>
+        <p class="price">${{ p.price }}/month</p>
+        <p>{{ p.description }}</p>
+        <p><strong><span class="ay-live-dot"></span>{{ p.credits }} credits</strong></p>
+        <button class="btn primary ay-btn ay-btn-primary" (click)="choosePlan(p)">
+          <svg class="ay-btn-icon" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 L10 6 L0 12 Z" fill="currentColor" /></svg>
+          <span>Select Plan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="loading-container">
+      <app-agent-loader label="Loading subscription plans"></app-agent-loader>
+    </div>
+  </ng-template>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+</div>

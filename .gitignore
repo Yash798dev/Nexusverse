@@ -1,0 +1,67 @@
+# ── Agentic YouTube — .gitignore ────────────────────────────────────────────
+# Keep credentials and generated media out of version control.
+
+# Secrets — never commit any of these
+.env
+.env.*
+!.env.example
+server/.env
+server/.env.*
+!server/.env.example
+
+# Google / YouTube OAuth credentials
+client_secret*.json
+credentials.json
+token.json
+*.pkl
+youtube_credentials.pkl
+server/youtube_credentials.pkl
+*.pem
+*.key
+*.p12
+
+# Python
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+frontend/.angular/
+frontend/dist/
+coverage/
+.nyc_output/
+npm-debug.log*
+
+# Generated media & job state (large, regenerated every run)
+uploads/
+server/uploads/
+stock_videos/
+server/stock_videos/
+resized_images/
+server/resized_images/
+*.mp4
+*.mp3
+*.m4a
+server/temp-audio.m4a
+
+# Per-run job data — holds copies of users' private notes while a video renders
+server/jobdata/
+
+# Job checkpoints
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

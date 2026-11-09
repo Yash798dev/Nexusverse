@@ -1,0 +1,69 @@
+<div class="auth-container">
+  <div class="auth-background">
+    <app-agent-backdrop [density]="0.8"></app-agent-backdrop>
+    <div class="auth-vignette"></div>
+  </div>
+
+  <app-theme-toggle class="auth-theme-toggle"></app-theme-toggle>
+
+  <div class="auth-card ay-spot" [class.is-busy]="loading">
+    <span class="card-energy" aria-hidden="true"></span>
+
+    <div class="card-header">
+      <div class="logo-container">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="5" width="18" height="14" rx="2"/>
+          <path d="M3 7l9 6 9-6"/>
+        </svg>
+      </div>
+      <h2 class="auth-title" appSplitReveal [splitDelay]="0.3">Verify Your Email</h2>
+      <p class="auth-subtitle" *ngIf="email">We sent a code to <strong>{{ email }}</strong></p>
+      <p class="auth-subtitle" *ngIf="!email">Enter the code we sent you</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      <div class="form-group">
+        <label for="otp" class="form-label">Verification Code</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="11" width="14" height="10" rx="2"/>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+          </svg>
+          <input
+            id="otp"
+            type="text"
+            inputmode="numeric"
+            formControlName="otp"
+            placeholder="Enter OTP"
+            class="form-input"
+          />
+        </div>
+      </div>
+
+      <div class="error-message" *ngIf="err">
+        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ err }}
+      </div>
+
+      <button type="submit" [disabled]="loading" class="submit-btn ay-btn ay-btn-primary">
+        <span *ngIf="!loading">Verify</span>
+        <span *ngIf="loading" class="loading-spinner"></span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p class="footer-text">
+        <a routerLink="/register" class="auth-link">Back to register</a>
+        &nbsp;·&nbsp;
+        <a routerLink="/login" class="auth-link">Sign in</a>
+      </p>
+      <p class="footer-text">
+        <a routerLink="/" class="auth-link">&larr; Back to home</a>
+      </p>
+    </div>
+  </div>
+</div>

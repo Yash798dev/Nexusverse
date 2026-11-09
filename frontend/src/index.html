@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Agentic YouTube — AI Powered Video Creation</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Apply the saved theme before first paint (ThemeService takes over after boot).
+       Dark is the default. -->
+  <script>
+    (function () {
+      var theme = 'dark';
+      try { if (localStorage.getItem('ay-theme') === 'light') theme = 'light'; } catch (e) {}
+      document.documentElement.setAttribute('data-theme', theme);
+      if (theme === 'light') document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fafafa');
+    })();
+  </script>
+  <!-- Paint the theme background before any stylesheet arrives, so there is no flash. -->
+  <style>html, body { background: #050505; } html[data-theme='light'], html[data-theme='light'] body { background: #fafafa; }</style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+</head>
+<body class="mat-typography">
+  <app-root>
+    <!-- Pre-bootstrap splash; Angular replaces this when the app starts. -->
+    <div class="ay-boot" role="status" aria-label="Loading Agentic YouTube">
+      <div class="ay-loader" style="--ay-loader-size: 72px" aria-hidden="true">
+        <svg class="ay-loader__links" viewBox="0 0 100 100"><path d="M18 18 H82 V82 H18 Z" pathLength="100" /></svg>
+        <i class="ay-loader__seed"></i>
+        <i class="ay-loader__node ay-loader__node--1"></i>
+        <i class="ay-loader__node ay-loader__node--2"></i>
+        <i class="ay-loader__node ay-loader__node--3"></i>
+        <i class="ay-loader__node ay-loader__node--4"></i>
+        <i class="ay-loader__pulse"></i>
+        <i class="ay-loader__play"></i>
+      </div>
+    </div>
+  </app-root>
+  <script src="https://js.stripe.com/v3/"></script>
+
+</body>
+</html>

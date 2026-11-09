@@ -1,0 +1,282 @@
+/* Auth pages (login / register / verify-otp share this stylesheet) —
+   theme-aware stage with the agent backdrop, a dark card whose top edge carries an
+   energy line that runs while the request is processing. */
+
+.auth-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 1.5rem;
+  overflow: hidden;
+  background: var(--ay-bg);
+  font-family: var(--ay-font);
+}
+
+.auth-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+/* Keeps the centre calm behind the card and the edges cinematic-dark. */
+.auth-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 55% at 50% 50%, rgba(var(--ay-bg-rgb), 0.75) 0%, rgba(var(--ay-bg-rgb), 0.2) 55%, rgba(var(--ay-bg-rgb), 0.85) 100%);
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
+  padding: 2.5rem;
+  background: linear-gradient(180deg, rgba(var(--ay-ink-rgb), 0.035), rgba(var(--ay-ink-rgb), 0.01)), rgba(var(--ay-surface-rgb), 0.94);
+  border: 1px solid var(--ay-line);
+  border-radius: 20px;
+  box-shadow: var(--ay-shadow-lg);
+  animation: card-in 0.9s var(--ay-ease) 0.1s both;
+  transition: border-color 0.4s var(--ay-ease);
+}
+.auth-card:hover { border-color: var(--ay-line-strong); }
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(30px) scale(0.985); }
+}
+
+/* Energy line along the top edge: draws in once, and loops while loading. */
+.card-energy {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: -1px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.card-energy::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--ay-yellow), var(--ay-pink), transparent);
+  transform-origin: left center;
+  animation: energy-arrive 1.6s var(--ay-ease) 0.6s both;
+}
+.card-energy::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 24%;
+  background: linear-gradient(90deg, transparent, var(--ay-yellow-bright), var(--ay-pink), transparent);
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.auth-card.is-busy .card-energy::after {
+  opacity: 1;
+  animation: ay-stream 1.3s var(--ay-ease-in-out) infinite;
+}
+@keyframes energy-arrive {
+  0% { transform: scaleX(0); opacity: 0.9; }
+  60% { transform: scaleX(1); opacity: 0.9; }
+  100% { transform: scaleX(1); opacity: 0.2; }
+}
+
+/* Staggered content reveal inside the card */
+.card-header,
+.auth-form > *,
+.auth-footer {
+  animation: ay-rise-sm 0.8s var(--ay-ease) both;
+}
+.card-header { animation-delay: 0.25s; }
+.auth-form > :nth-child(1) { animation-delay: 0.35s; }
+.auth-form > :nth-child(2) { animation-delay: 0.42s; }
+.auth-form > :nth-child(3) { animation-delay: 0.49s; }
+.auth-form > :nth-child(4) { animation-delay: 0.56s; }
+.auth-form > :nth-child(5) { animation-delay: 0.63s; }
+.auth-form > :nth-child(6) { animation-delay: 0.7s; }
+.auth-footer { animation-delay: 0.75s; }
+
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.logo-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 1.1rem;
+  border-radius: 14px;
+  border: 1px solid var(--ay-line-strong);
+  background: var(--ay-surface-2);
+  color: var(--ay-ink);
+}
+.logo-icon { width: 24px; height: 24px; stroke-width: 1.6; }
+.logo-container .ay-brand-glyph { width: 22px; height: 25px; }
+
+.auth-title {
+  margin: 0 0 0.4rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ay-ink);
+}
+.auth-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--ay-text-2);
+}
+.auth-subtitle strong { color: var(--ay-ink); font-weight: 500; }
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ay-text-2);
+}
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-icon {
+  position: absolute;
+  left: 0.95rem;
+  width: 17px;
+  height: 17px;
+  stroke-width: 1.7;
+  color: var(--ay-text-3);
+  pointer-events: none;
+  transition: color 0.3s var(--ay-ease);
+}
+.form-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem 0.85rem 2.7rem;
+  background: var(--ay-surface-2);
+  border: 1px solid var(--ay-line-strong);
+  border-radius: 12px;
+  color: var(--ay-ink);
+  font: 400 0.95rem var(--ay-font);
+  transition: border-color 0.3s var(--ay-ease), box-shadow 0.3s var(--ay-ease), background-color 0.3s var(--ay-ease);
+}
+.form-input::placeholder { color: var(--ay-text-3); }
+.form-input:hover { border-color: rgba(var(--ay-ink-rgb), 0.26); }
+.form-input:focus {
+  outline: none;
+  background: var(--ay-surface-3);
+  border-color: var(--ay-accent);
+  box-shadow: var(--ay-glow);
+}
+.input-wrapper:focus-within .input-icon { color: var(--ay-yellow); }
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(var(--ay-danger-rgb), 0.25);
+  background: rgba(var(--ay-danger-rgb), 0.05);
+  color: var(--ay-danger);
+  font-size: 0.85rem;
+}
+.error-icon { width: 17px; height: 17px; flex-shrink: 0; }
+
+.verify-hint {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: -0.25rem;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 0.35rem;
+  font-weight: 600;
+}
+
+/* Busy state: grey and pink agents converge on a black core, on the white button. */
+.loading-spinner {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 8px;
+}
+.loading-spinner::before,
+.loading-spinner::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+}
+.loading-spinner::before {
+  background: var(--ay-bg);
+  animation: core-pulse 1.2s var(--ay-ease-in-out) infinite;
+}
+.loading-spinner::after {
+  background: transparent;
+  animation: agents-merge 1.2s var(--ay-ease-in-out) infinite;
+}
+@keyframes core-pulse {
+  0%, 100% { transform: scale(0.7); }
+  50% { transform: scale(1.25); }
+}
+@keyframes agents-merge {
+  0%, 100% { box-shadow: -12px 0 0 var(--ay-text-3), 12px 0 0 var(--ay-pink); }
+  50% { box-shadow: 0 0 0 var(--ay-text-3), 0 0 0 var(--ay-pink); }
+}
+
+.auth-footer {
+  margin-top: 1.9rem;
+  text-align: center;
+}
+.footer-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ay-text-2);
+}
+.auth-footer .footer-text + .footer-text { margin-top: 0.7rem; }
+
+.auth-link {
+  color: var(--ay-ink);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  background-image: var(--ay-energy);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  padding-bottom: 2px;
+  transition: background-size 0.5s var(--ay-ease), color 0.3s var(--ay-ease);
+}
+.auth-link:hover { background-size: 100% 1px; }
+
+@media (max-width: 480px) {
+  .auth-card { padding: 1.9rem 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card, .card-header, .auth-form > *, .auth-footer, .card-energy::before { animation: none; }
+  .auth-card.is-busy .card-energy::after { animation: none; opacity: 0.6; transform: none; width: 100%; }
+}

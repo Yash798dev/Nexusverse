@@ -1,0 +1,8 @@
+<div class="ay-route-progress" [class.is-active]="navigating" aria-hidden="true"></div>
+<div class="ay-wipe-line" aria-hidden="true"></div>
+<div #routeContainer class="app-shell">
+  <router-outlet></router-outlet>
+</div>
+<app-scroll-fx></app-scroll-fx>
+<app-toast-host></app-toast-host>
+<app-shortcuts-panel></app-shortcuts-panel>

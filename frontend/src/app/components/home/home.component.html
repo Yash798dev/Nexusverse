@@ -1,0 +1,171 @@
+<div class="home-container">
+  <!-- Autonomous agents working in the background -->
+  <app-agent-backdrop class="home-backdrop"></app-agent-backdrop>
+
+  <!-- Cursor light: a barely-there warm tint that follows the pointer -->
+  <div
+    class="mouse-gradient"
+    [style.background]="'radial-gradient(520px circle at ' + mousePos.x + 'px ' + mousePos.y + 'px, rgba(var(--ay-accent-rgb), 0.05), transparent 60%)'">
+  </div>
+
+  <!-- Data particles: grey information, a few yellow (processing) and pink (creative) -->
+  <div class="particles-container" data-parallax="0.12">
+    <div
+      *ngFor="let particle of particles; let i = index"
+      class="particle"
+      [style.left.%]="particle.left"
+      [style.top.%]="particle.top"
+      [style.animation-delay]="particle.delay"
+      [style.animation-duration]="particle.duration">
+    </div>
+  </div>
+
+  <!-- Navigation: one shared bar for the whole platform (shared/app-nav). -->
+  <app-nav></app-nav>
+
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <!-- Welcome -->
+      <div class="dash-head ay-in-sm" style="--ay-d: .45s">
+        <h1 class="dash-title">Welcome back</h1>
+        <p class="dash-sub">Turn what you learn into what you publish.</p>
+      </div>
+
+      <!-- Live run: only while something is actually generating -->
+      <div class="dash-live ay-in-sm" *ngIf="jobs.state() !== 'idle'" style="--ay-d: .5s">
+        <div class="live-top">
+          <span class="ay-live-dot" [class.ay-live-dot--idle]="jobs.state() === 'paused'"></span>
+          <span class="live-stage">{{ liveLabel }}</span>
+          <span class="live-pct">{{ jobs.progress() }}%</span>
+        </div>
+        <div class="live-bar"><div class="live-fill" [style.width.%]="jobs.progress()"></div></div>
+        <p class="live-prompt" *ngIf="jobs.prompt()">{{ jobs.prompt() }}</p>
+        <a class="live-open" routerLink="/workflow">Open the Studio →</a>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick ay-in-sm" style="--ay-d: .7s">
+        <a class="qa" routerLink="/knowledge">
+          <span class="qa-icon">＋</span>
+          <span class="qa-text"><b>Add knowledge</b><i>Paste a lecture or talk</i></span>
+        </a>
+        <a class="qa" routerLink="/workflow">
+          <span class="qa-icon">▶</span>
+          <span class="qa-text"><b>Create a video</b><i>From a prompt or your notes</i></span>
+        </a>
+        <a class="qa" routerLink="/knowledge">
+          <span class="qa-icon">◆</span>
+          <span class="qa-text"><b>Knowledge → Video</b><i>Ground a video in your sources</i></span>
+        </a>
+        <a class="qa" routerLink="/profile">
+          <span class="qa-icon">≡</span>
+          <span class="qa-text"><b>Your history</b><i>Everything you have made</i></span>
+        </a>
+      </div>
+
+      <!-- The autonomous pipeline, running -->
+      <app-pipeline-strip class="home-pipeline ay-in-fade" style="--ay-d: 1.3s"></app-pipeline-strip>
+
+      <!-- Studio stats — counted up on arrival -->
+      <div class="stats">
+        <div class="stat ay-card ay-card--lift ay-spot" appReveal [revealDelay]="0">
+          <span class="stat-label"><span class="ay-live-dot"></span> Credits left</span>
+          <span class="stat-value" [appCountUp]="credits">—</span>
+          <span class="stat-note">Top up any time from Pricing</span>
+        </div>
+        <div class="stat ay-card ay-card--lift ay-spot" appReveal [revealDelay]="110">
+          <span class="stat-label"><span class="ay-live-dot ay-live-dot--pink"></span> Videos created</span>
+          <span class="stat-value" [appCountUp]="videosCreated">—</span>
+          <span class="stat-note">Every run your agents have finished</span>
+        </div>
+        <div class="stat ay-card ay-card--lift ay-spot" appReveal [revealDelay]="220">
+          <span class="stat-label"><span class="ay-live-dot ay-live-dot--idle"></span> Knowledge sources</span>
+          <span class="stat-value" [appCountUp]="documentsCount">—</span>
+          <span class="stat-note">Lectures and talks you have turned into notes</span>
+        </div>
+      </div>
+
+      <!-- First run: each step ticks from real data, never a stored flag, so it
+           never asks for work already done. -->
+      <div class="checklist ay-card" *ngIf="showChecklist" appReveal>
+        <h2>Get set up</h2>
+        <ol>
+          <li [class.done]="documentsCount > 0">
+            <span class="tick">{{ documentsCount > 0 ? '✓' : '1' }}</span>
+            <span><b>Add your first knowledge source</b><i>Paste a YouTube lecture into the Knowledge Hub.</i></span>
+            <a routerLink="/knowledge" *ngIf="!documentsCount">Add</a>
+          </li>
+          <li [class.done]="videosCreated !== null && videosCreated > 0">
+            <span class="tick">{{ videosCreated ? '✓' : '2' }}</span>
+            <span><b>Create your first video</b><i>From a prompt, or grounded in your notes.</i></span>
+            <a routerLink="/workflow" *ngIf="!videosCreated">Create</a>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Recent -->
+      <div class="recent">
+        <section class="panel ay-card" appReveal>
+          <header>
+            <h2>Recent knowledge</h2>
+            <a routerLink="/knowledge">View all</a>
+          </header>
+          <p class="panel-empty" *ngIf="!loadingKnowledge && !recentKnowledge.length">
+            Nothing yet — add a lecture and it appears here.
+          </p>
+          <p class="panel-empty" *ngIf="loadingKnowledge">Loading…</p>
+          <ul>
+            <li *ngFor="let k of recentKnowledge">
+              <a [routerLink]="['/knowledge', k._id]">
+                <span class="dot" [attr.data-status]="k.status"></span>
+                <span class="row-title">{{ k.title || 'Processing…' }}</span>
+                <span class="row-meta">{{ k.createdAt | date: 'MMM d' }}</span>
+              </a>
+            </li>
+          </ul>
+        </section>
+
+        <section class="panel ay-card" appReveal [revealDelay]="110">
+          <header>
+            <h2>Recent videos</h2>
+            <a routerLink="/videos">View all</a>
+          </header>
+          <p class="panel-empty" *ngIf="!loadingVideos && !recentVideos.length">
+            No videos yet — your first run shows up here.
+          </p>
+          <p class="panel-empty" *ngIf="loadingVideos">Loading…</p>
+          <ul>
+            <!-- Most runs never publish, so the row is not a link. A real link
+                 appears only when there is actually something to open. -->
+            <li *ngFor="let v of recentVideos">
+              <div class="row">
+                <span class="dot" [attr.data-status]="v.status"></span>
+                <span class="row-title" [title]="v.prompt">{{ v.prompt }}</span>
+                <a
+                  class="row-link"
+                  *ngIf="v.youtubeVideoId"
+                  [href]="'https://youtu.be/' + v.youtubeVideoId"
+                  target="_blank"
+                  rel="noopener">Watch</a>
+                <span class="row-meta">{{ v.createdAt | date: 'MMM d' }}</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio-waveform floor -->
+  <div class="wave-container">
+    <svg viewBox="0 0 1440 120" class="wave-svg" preserveAspectRatio="none">
+      <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z">
+        <animate attributeName="d" dur="10s" repeatCount="indefinite"
+          values="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z;
+          M0,32L48,37.3C96,43,192,53,288,58.7C384,64,480,64,576,58.7C672,53,768,43,864,48C960,53,1056,75,1152,80C1248,85,1344,75,1392,69.3L1440,64L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z;
+          M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" />
+      </path>
+    </svg>
+  </div>
+</div>

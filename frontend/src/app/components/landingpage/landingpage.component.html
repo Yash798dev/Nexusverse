@@ -1,0 +1,194 @@
+<div class="page" [class.is-open]="menuOpen">
+
+  <!-- ============ Cinematic hero (ported from the design canvas) ============ -->
+  <section class="stage" id="top">
+    <div class="plate">
+      <video class="plate-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+        <source
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260808_112712_da9d53df-6d27-4b12-bdf6-aa9dc2622bdf.mp4"
+          type="video/mp4" />
+      </video>
+    </div>
+
+    <header class="topbar">
+      <a class="brand" href="#top" (click)="$event.preventDefault(); scrollTo('top')" aria-label="Agentic YouTube — home">
+        <svg viewBox="0 0 38 42" width="100%" height="100%" aria-hidden="true">
+          <defs>
+            <linearGradient id="agy1" x1="4" y1="2" x2="34" y2="40" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#cfcfcf" />
+              <stop offset=".42" stop-color="#8e8e8e" />
+              <stop offset=".62" stop-color="#3f3f3f" />
+              <stop offset="1" stop-color="#e6e6e6" />
+            </linearGradient>
+          </defs>
+          <path d="M6 3.6 L30 20.4 L6 37.2 Z" fill="url(#agy1)" />
+          <path d="M6 3.6 L34 8.2 M30 20.4 L34 8.2 M30 20.4 L34 33.6 M6 37.2 L34 33.6" stroke="#8b8a8a" stroke-width="1.1" fill="none" />
+          <circle cx="34" cy="8.2" r="2.9" fill="#fdfdfd" />
+          <circle cx="34" cy="33.6" r="2.9" fill="#fdfdfd" />
+        </svg>
+      </a>
+
+      <nav class="links" aria-label="Primary">
+        <a href="#how" (click)="$event.preventDefault(); scrollTo('how')">How It Works</a>
+        <a href="#features" (click)="$event.preventDefault(); scrollTo('features')">Features</a>
+        <a href="#tech" (click)="$event.preventDefault(); scrollTo('tech')">Technology</a>
+        <a href="#about" (click)="$event.preventDefault(); scrollTo('about')">About</a>
+      </nav>
+
+      <div class="nav-actions">
+        <app-theme-toggle></app-theme-toggle>
+        <button type="button" class="nav-signin" *ngIf="!loggedIn" (click)="signIn()">Sign In</button>
+        <button type="button" class="nav-signin" *ngIf="loggedIn" (click)="signOut()">Sign Out</button>
+        <button type="button" class="pill pill-nav" (click)="createVideo()">
+          <span>{{ loggedIn ? 'Open Studio' : 'Create a Video' }}</span>
+        </button>
+      </div>
+
+      <button
+        class="burger"
+        type="button"
+        [attr.aria-label]="menuOpen ? 'Close menu' : 'Open menu'"
+        [attr.aria-expanded]="menuOpen"
+        aria-controls="menu"
+        (click)="toggleMenu()">
+        <i class="b1"></i>
+        <i class="b2"></i>
+      </button>
+    </header>
+
+    <!-- Mobile menu -->
+    <nav class="menu" id="menu" aria-label="Menu" [attr.aria-hidden]="!menuOpen">
+      <div class="menu-inner">
+        <p class="menu-eyebrow r r1">Menu</p>
+        <ul class="menu-list">
+          <li class="r r2"><a href="#how" (click)="$event.preventDefault(); scrollTo('how')">How It Works<span>&rsaquo;</span></a></li>
+          <li class="r r3"><a href="#features" (click)="$event.preventDefault(); scrollTo('features')">Features<span>&rsaquo;</span></a></li>
+          <li class="r r4"><a href="#tech" (click)="$event.preventDefault(); scrollTo('tech')">Technology<span>&rsaquo;</span></a></li>
+          <li class="r r5"><a href="#about" (click)="$event.preventDefault(); scrollTo('about')">About<span>&rsaquo;</span></a></li>
+          <li class="r r5" *ngIf="!loggedIn"><a routerLink="/login" (click)="closeMenu()">Sign In<span>&rsaquo;</span></a></li>
+          <li class="r r5" *ngIf="loggedIn"><a routerLink="/home" (click)="closeMenu()">Dashboard<span>&rsaquo;</span></a></li>
+        </ul>
+        <div class="menu-foot r r6">
+          <button type="button" class="pill" (click)="createVideo()">
+            <svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 L10 6 L0 12 Z" fill="#050505" /></svg>
+            <span>{{ loggedIn ? 'Open Studio' : 'Create a Video' }}</span>
+          </button>
+          <a class="ghost" href="#how" (click)="$event.preventDefault(); scrollTo('how')">Explore Workflow</a>
+          <app-theme-toggle></app-theme-toggle>
+        </div>
+      </div>
+    </nav>
+
+    <main class="hero">
+      <h1 class="headline">
+        <span>From Prompt&ngsp;</span>
+        <span>to Published Video</span>
+      </h1>
+      <p class="sub">
+        <span>Autonomous AI agents that transform your ideas into&ngsp;</span>
+        <span>complete YouTube videos — from script to upload.</span>
+      </p>
+      <div class="actions">
+        <button type="button" class="pill pill-cta" (click)="createVideo()">
+          <svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 L10 6 L0 12 Z" fill="#050505" /></svg>
+          <span>{{ loggedIn ? 'Open Studio' : 'Create a Video' }}</span>
+        </button>
+        <a class="ghost" href="#how" (click)="$event.preventDefault(); scrollTo('how')">Explore Workflow</a>
+      </div>
+    </main>
+
+    <div class="logos">
+      <div class="lg">
+        <svg viewBox="0 0 30 30" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.6"><circle cx="10.5" cy="15" r="7.5" /><circle cx="20.5" cy="15" r="7.5" /></g></svg>
+        <span class="lg-word">LangChain</span>
+      </div>
+      <div class="lg">
+        <svg viewBox="0 0 30 30" aria-hidden="true"><g stroke="currentColor" stroke-width="2.2" fill="none"><path d="M8 8 L22 15 L8 22" /></g><circle cx="8" cy="8" r="3.4" fill="currentColor" /><circle cx="8" cy="22" r="3.4" fill="currentColor" /><circle cx="23" cy="15" r="3.4" fill="currentColor" /></svg>
+        <span class="lg-word">LangGraph</span>
+      </div>
+      <div class="lg">
+        <svg viewBox="0 0 30 30" aria-hidden="true"><g fill="none" stroke="currentColor"><circle cx="15" cy="15" r="12" stroke-width="2.4" /><circle cx="15" cy="15" r="6" stroke-width="2.4" /></g><circle cx="15" cy="15" r="2.2" fill="currentColor" /></svg>
+        <span class="lg-word">Stable Diffusion</span>
+      </div>
+      <div class="lg">
+        <svg viewBox="0 0 34 26" aria-hidden="true" class="lg-wide"><rect x="1.5" y="1.5" width="31" height="23" rx="6" fill="none" stroke="currentColor" stroke-width="2.5" /><path d="M14 8.5 L21.5 13 L14 17.5 Z" fill="currentColor" /></svg>
+        <span class="lg-word">YouTube API</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ How It Works ============ -->
+  <section class="section" id="how">
+    <div class="section-head">
+      <span class="eyebrow">How It Works</span>
+      <h2>Five agents. Zero manual work.</h2>
+      <p>One prompt enters the graph. A finished, captioned, published video comes out the other side.</p>
+    </div>
+    <ol class="steps">
+      <li class="step" *ngFor="let step of steps; let i = index">
+        <span class="step-index">{{ i + 1 < 10 ? '0' : '' }}{{ i + 1 }}</span>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.description }}</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ Features ============ -->
+  <section class="section" id="features">
+    <div class="section-head">
+      <span class="eyebrow">Capabilities</span>
+      <h2>Built to publish, not to demo.</h2>
+      <p>Every stage of the pipeline is graded before the next one starts.</p>
+    </div>
+    <div class="cards">
+      <article class="card" *ngFor="let feature of features">
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ Technology ============ -->
+  <section class="section" id="tech">
+    <div class="section-head">
+      <span class="eyebrow">Technology</span>
+      <h2>The stack behind the run.</h2>
+      <p>Open models and orchestration, wired to your channel.</p>
+    </div>
+    <div class="tech-list">
+      <div class="tech-row" *ngFor="let item of tech">
+        <span class="tech-name">{{ item.name }}</span>
+        <span class="tech-role">{{ item.role }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ About / CTA ============ -->
+  <section class="section about" id="about">
+    <div class="section-head">
+      <span class="eyebrow">About</span>
+      <h2>Ready to publish your first agent-made video?</h2>
+      <p>
+        Agentic YouTube is an autonomous content studio: you describe the video,
+        and a graph of agents researches, writes, narrates, edits and uploads it.
+        Create an account and the studio opens on your first run.
+      </p>
+    </div>
+    <div class="about-actions">
+      <button type="button" class="pill pill-solid" (click)="createVideo()">
+        <span>{{ loggedIn ? 'Open Studio' : 'Create your account' }}</span>
+      </button>
+      <button type="button" class="ghost-btn" *ngIf="!loggedIn" (click)="signIn()">I already have an account</button>
+      <button type="button" class="ghost-btn" *ngIf="loggedIn" (click)="dashboard()">Go to dashboard</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>© {{ year }} Agentic YouTube</span>
+    <span class="footer-links">
+      <a href="#how" (click)="$event.preventDefault(); scrollTo('how')">How It Works</a>
+      <a routerLink="/login">Sign In</a>
+      <a routerLink="/register">Register</a>
+    </span>
+  </footer>
+</div>

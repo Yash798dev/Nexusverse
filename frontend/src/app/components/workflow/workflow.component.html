@@ -1,0 +1,433 @@
+<!-- Navigation: one shared bar for the whole platform (shared/app-nav). -->
+<app-nav></app-nav>
+
+<div
+  class="workflow-page"
+  [class.is-running]="progress > 0 && progress < 100 && jobState !== 'paused'"
+  [class.is-paused]="jobState === 'paused'">
+  <app-agent-backdrop [density]="0.5"></app-agent-backdrop>
+
+  <!-- src/app/components/workflow/workflow.component.html -->
+  <div class="workflow-container">
+
+    <!-- LIVE PIPELINE: the real job, stage by stage, with timers and job controls -->
+    <section class="card ay-card pipeline-card" [class.is-complete]="pipelineIndex >= pipelineStages.length">
+      <header class="pipeline-head">
+        <div>
+          <span class="label">
+            <span class="ay-live-dot" [class.ay-live-dot--idle]="!isRunning"></span>
+            Live pipeline
+          </span>
+          <h2 class="pipeline-title">
+            {{ pipelineTitle }}
+            <span class="paused-chip" *ngIf="jobState === 'paused'">Paused</span>
+          </h2>
+        </div>
+
+        <div class="pipeline-side">
+          <div class="pipeline-clock" *ngIf="runStartedAt">
+            <span class="muted-label">Elapsed</span>
+            <span class="clock">{{ elapsedLabel }}</span>
+          </div>
+          <div class="pipeline-clock" *ngIf="remainingLabel">
+            <span class="muted-label">Remaining</span>
+            <span class="clock clock--eta">{{ remainingLabel }}</span>
+          </div>
+
+          <div class="job-controls" role="group" aria-label="Job controls">
+            <button
+              *ngIf="jobState !== 'paused'"
+              type="button"
+              class="ay-btn ay-btn-outline ay-btn-sm job-btn"
+              [disabled]="jobState !== 'running' || controlBusy"
+              (click)="pauseJob()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
+              {{ controlBusy ? 'Pausing…' : 'Pause' }}
+            </button>
+            <button
+              *ngIf="jobState === 'paused'"
+              type="button"
+              class="ay-btn ay-btn-primary ay-btn-sm job-btn"
+              [disabled]="controlBusy"
+              (click)="resumeJob()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+              {{ controlBusy ? 'Resuming…' : 'Resume' }}
+            </button>
+            <button
+              type="button"
+              class="ay-btn ay-btn-outline ay-btn-sm job-btn job-btn--clear"
+              [class.is-confirming]="confirmClear"
+              [disabled]="controlBusy || !canClear"
+              [attr.aria-label]="confirmClear ? 'Click again to stop and clear the job' : 'Clear job'"
+              (click)="clearJob()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none" /></svg>
+              {{ confirmClear ? 'Stop & clear?' : 'Clear job' }}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <app-pipeline-strip
+        [live]="true"
+        [stages]="pipelineStages"
+        [activeIndex]="pipelineIndex"
+        [meta]="pipelineMeta"
+        [paused]="jobState === 'paused'">
+      </app-pipeline-strip>
+
+      <div class="ready-banner" *ngIf="pipelineIndex >= pipelineStages.length">
+        <span class="ready-play" aria-hidden="true"></span>
+        <span><strong>Video ready.</strong> Preview it below or download it.</span>
+      </div>
+    </section>
+
+    <!-- SCRIPT REVIEW: the run is paused here, holding the GPU work back until
+         the script is approved. -->
+    <section *ngIf="scriptReviewOpen" class="card ay-card"
+             style="margin-bottom:1rem;border-color:var(--ay-yellow-edge);background:var(--ay-yellow-soft);">
+      <div style="display:flex;align-items:baseline;gap:.6rem;margin-bottom:.6rem;flex-wrap:wrap;">
+        <span class="ay-live-dot"></span>
+        <strong style="font-size:14.5px;color:var(--ay-ink);">Your script is ready for review</strong>
+        <span style="font-size:12px;color:var(--ay-text-3);">
+          Nothing else runs until you continue — edit it, or accept it as written.
+        </span>
+      </div>
+
+      <textarea
+        [(ngModel)]="scriptDraft"
+        [ngModelOptions]="{standalone:true}"
+        rows="9"
+        aria-label="Edit the generated script"
+        style="width:100%;padding:.8rem .9rem;border-radius:10px;border:1px solid var(--ay-line);background:var(--ay-surface);color:var(--ay-ink);font:inherit;font-size:14px;line-height:1.65;resize:vertical;"></textarea>
+
+      <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-top:.7rem;">
+        <button type="button" class="ay-btn ay-btn-primary" [disabled]="submittingScript" (click)="submitScript()">
+          {{ submittingScript ? 'Sending…' : 'Continue with this script' }}
+        </button>
+        <button type="button" class="ay-btn ay-btn-outline" [disabled]="submittingScript" (click)="acceptDraft()">
+          Keep the original
+        </button>
+        <button type="button" class="ay-btn ay-btn-ghost" [disabled]="submittingScript" (click)="cancelFromReview()"
+                style="margin-left:auto;">
+          Cancel the run
+        </button>
+      </div>
+      <p style="margin:.55rem 0 0;font-size:11.5px;color:var(--ay-text-3);">
+        {{ draftWordCount }} words · roughly {{ draftSeconds }}s of narration
+      </p>
+    </section>
+
+    <!-- TOP ROW: prompt (65%) + logs (35%) -->
+    <div class="top-row">
+      <!-- PROMPT CARD (65%) -->
+      <div class="card ay-card prompt-card">
+        <span class="card-energy" aria-hidden="true"></span>
+        <form #promptForm [formGroup]="form" (ngSubmit)="startWorkflow()" class="prompt-form">
+          <label class="label" for="promptInput">
+            <span class="ay-live-dot" [class.ay-live-dot--idle]="!(progress > 0 && progress < 100) || jobState === 'paused'"></span>
+            Prompt
+          </label>
+
+          <!-- Knowledge grounding: what this video will be built from. -->
+          <div
+            *ngIf="groundedTitles.length"
+            style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;padding:.55rem .7rem;border:1px solid var(--ay-pink-edge);background:var(--ay-pink-soft);border-radius:10px;">
+            <span style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ay-pink-bright);">
+              Grounded in
+            </span>
+            <span
+              *ngFor="let t of groundedTitles"
+              style="font-size:12px;color:var(--ay-ink);background:rgba(var(--ay-ink-rgb),.06);border:1px solid var(--ay-line);padding:.15rem .55rem;border-radius:999px;max-width:22ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"
+              [title]="t">{{ t }}</span>
+            <span style="font-size:11.5px;color:var(--ay-text-3);">· researched from your notes, not the web</span>
+            <button
+              type="button"
+              *ngIf="!isJobActive"
+              (click)="clearGrounding()"
+              style="margin-left:auto;background:none;border:0;color:var(--ay-text-3);font:inherit;font-size:11.5px;cursor:pointer;padding:.15rem .3rem;">
+              Clear
+            </button>
+          </div>
+          <textarea
+            #promptInput
+            id="promptInput"
+            formControlName="prompt"
+            rows="4"
+            [attr.maxlength]="maxPromptLength"
+            class="prompt-input"
+            placeholder="Write a short topic or prompt (e.g. 'machine learning')"
+            (keydown.control.enter)="$event.preventDefault(); promptForm.requestSubmit()"
+            (keydown.meta.enter)="$event.preventDefault(); promptForm.requestSubmit()"
+            (animationend)="promptInput.classList.remove('is-filled')"
+          ></textarea>
+
+          <div class="prompt-assist">
+            <div class="starters" role="group" aria-label="Prompt starters">
+              <button
+                type="button"
+                class="starter"
+                *ngFor="let s of promptStarters; let i = index"
+                [style.animation-delay.ms]="350 + i * 60"
+                (click)="useStarter(s.prompt, promptInput)">
+                <span class="starter-tag">{{ s.tag }}</span>{{ s.label }}
+              </button>
+            </div>
+            <div class="prompt-meta">
+              <span class="kbd-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to start</span>
+              <span class="counter" [class.is-long]="promptLength > maxPromptLength * 0.9">{{ promptLength }}/{{ maxPromptLength }}</span>
+            </div>
+          </div>
+
+          <!-- Video settings. Collapsed by default: the defaults are a complete run. -->
+          <div style="margin:.85rem 0 .25rem;border:1px solid var(--ay-line);border-radius:12px;overflow:hidden;">
+            <button
+              type="button"
+              (click)="settingsOpen = !settingsOpen"
+              [attr.aria-expanded]="settingsOpen"
+              style="width:100%;display:flex;align-items:center;gap:.6rem;padding:.6rem .8rem;background:none;border:0;color:inherit;font:inherit;cursor:pointer;text-align:left;">
+              <span style="font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--ay-text-3);">
+                Video settings
+              </span>
+              <span style="font-size:12px;color:var(--ay-text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                {{ settingsSummary }}
+              </span>
+              <span style="margin-left:auto;font-size:11px;color:var(--ay-text-3);transition:transform .2s;"
+                    [style.transform]="settingsOpen ? 'rotate(180deg)' : 'none'">▼</span>
+            </button>
+
+            <div *ngIf="settingsOpen" class="settings-grid">
+              <label>
+                <span class="ay-label">Length</span>
+                <select class="ay-field" [(ngModel)]="config.durationSeconds" [ngModelOptions]="{standalone:true}" [disabled]="isJobActive">
+                  <option *ngFor="let d of durationOptions" [ngValue]="d.value">{{ d.label }}</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="ay-label">Format</span>
+                <select class="ay-field" [(ngModel)]="config.orientation" [ngModelOptions]="{standalone:true}" [disabled]="isJobActive">
+                  <option value="portrait">Portrait 9:16</option>
+                  <option value="landscape">Landscape 16:9</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="ay-label">Tone</span>
+                <select class="ay-field" [(ngModel)]="config.tone" [ngModelOptions]="{standalone:true}" [disabled]="isJobActive">
+                  <option *ngFor="let t of toneOptions" [value]="t.value">{{ t.label }}</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="ay-label">Voice</span>
+                <select class="ay-field" [(ngModel)]="config.voice" [ngModelOptions]="{standalone:true}" [disabled]="isJobActive">
+                  <option *ngFor="let v of voiceOptions" [value]="v.value">{{ v.label }}</option>
+                </select>
+              </label>
+
+              <label>
+                <span class="ay-label">Language</span>
+                <select class="ay-field" [(ngModel)]="config.language" [ngModelOptions]="{standalone:true}" [disabled]="isJobActive">
+                  <option *ngFor="let l of languageOptions" [value]="l.value">{{ l.label }}</option>
+                </select>
+              </label>
+
+              <label class="settings-check">
+                <input type="checkbox" [(ngModel)]="config.reviewScript" [ngModelOptions]="{standalone:true}" [disabled]="isJobActive" />
+                <span>Review the script first</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="left-controls">
+              <button type="submit" class="ay-btn ay-btn-primary" [disabled]="loading || isJobActive">
+                <svg class="ay-btn-icon" viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0 L10 6 L0 12 Z" fill="currentColor" /></svg>
+                <span>{{ loading ? 'Starting…' : 'Proceed' }}</span>
+              </button>
+            </div>
+
+            <div class="right-controls">
+              <button type="button" class="ay-btn ay-btn-outline" (click)="downloadLatest()">
+                <svg class="btn-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                  <path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>
+                </svg>
+                Download Video
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- LOGS (35%) -->
+      <div class="card ay-card logs-card" role="log" aria-live="polite">
+        <div class="logs-header">
+          <div class="logs-title">Realtime Logs</div>
+          <div class="logs-meta">Latest activity</div>
+        </div>
+        <div class="logs-body" id="logsBody" #logsContainer>
+          <div *ngFor="let l of logs; let i = index; let last = last" class="log-line" [class.is-latest]="last" [attr.data-index]="i">
+            {{ l }}
+          </div>
+        </div>
+        <div class="logs-footer">
+          <button class="ay-btn ay-btn-outline ay-btn-sm" (click)="clearLogs()">Clear</button>
+          <button class="ay-btn ay-btn-outline ay-btn-sm" (click)="copyLogs()">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDIO FLOOR: watch the agents work, and something to do while they do -->
+    <section class="studio-floor">
+      <div class="card ay-card floor-feed">
+        <header class="floor-head">
+          <div>
+            <span class="label">
+              <span class="ay-live-dot" [class.ay-live-dot--idle]="!isRunning"></span>
+              Behind the scenes
+            </span>
+            <h3 class="floor-title">What your agents have made so far</h3>
+          </div>
+          <div class="notify">
+            <button
+              *ngIf="notifyPermission === 'default'"
+              type="button"
+              class="ay-btn ay-btn-outline ay-btn-sm notify-btn"
+              (click)="enableNotifications()">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20a2 2 0 0 0 4 0" /></svg>
+              Notify me when it's ready
+            </button>
+            <span *ngIf="notifyPermission === 'granted'" class="notify-on"><span class="ay-live-dot"></span> We'll notify you</span>
+            <span *ngIf="notifyPermission === 'denied'" class="notify-off">Notifications are blocked in your browser</span>
+            <p class="notify-note" *ngIf="isJobActive">You can leave this page — the job keeps running on the server.</p>
+          </div>
+        </header>
+        <app-studio-feed [artifacts]="artifacts" [serverBase]="serverBase" [running]="isJobActive"></app-studio-feed>
+      </div>
+
+      <div class="card ay-card floor-wait">
+        <app-waiting-room
+          [facts]="researchFacts"
+          [topic]="form.value.prompt || ''"
+          [running]="isJobActive"
+          (useIdea)="usePromptIdea($event)">
+        </app-waiting-room>
+      </div>
+    </section>
+
+    <!-- GLOBAL PROGRESS -->
+    <div class="card ay-card progress-card" [class.is-complete]="progress >= 100">
+      <div class="progress-row">
+        <div class="progress-bar-outer">
+          <div class="progress-bar-inner" [style.width.%]="progress"></div>
+        </div>
+        <div class="progress-number">{{ progress }}%</div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+      <section class="left-column">
+        <div class="card ay-card current-stage-card">
+          <div class="stage-top">
+            <div class="stage-left">
+              <div class="stage-badge" [class.is-idle]="!currentStage">{{ currentStage ? (currentStage | slice:0:24) : 'Waiting' }}</div>
+              <div>
+                <div class="muted-label">Current Stage</div>
+                <div class="stage-title">
+                  {{ currentStage || 'Waiting...' }}
+                  <span *ngIf="currentStage && !stageInfo[currentStage]" class="in-progress-text">
+                    (In Progress...)
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="stage-right">
+              <div class="muted-label">Overall</div>
+              <div class="big-number">{{ progress }}%</div>
+            </div>
+          </div>
+
+          <div class="stage-mini">
+            <div class="muted-label">Stage progress</div>
+            <div class="mini-bar">
+              <div class="mini-bar-fill" [style.width.%]="getStageProgress(currentStage || '')"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card ay-card preview-card">
+          <h3 class="card-title">Preview</h3>
+          <div *ngIf="videoUrl; else noVideo" class="preview-area">
+            <video controls [src]="videoUrl" class="preview-player"></video>
+            <div class="preview-actions">
+              <button class="ay-btn ay-btn-outline ay-btn-sm" (click)="previewInPlayer()">Open in new tab</button>
+              <button class="ay-btn ay-btn-primary ay-btn-sm" (click)="downloadLatest()">Download</button>
+            </div>
+          </div>
+          <ng-template #noVideo>
+            <div class="no-video">
+              <!-- Script lines, image frames and a waveform converge into a video -->
+              <div class="forge" aria-hidden="true">
+                <span class="forge-line forge-line--1"></span>
+                <span class="forge-line forge-line--2"></span>
+                <span class="forge-line forge-line--3"></span>
+                <span class="forge-frame forge-frame--1"></span>
+                <span class="forge-frame forge-frame--2"></span>
+                <span class="forge-frame forge-frame--3"></span>
+                <span class="forge-wave"><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="forge-screen"><span class="forge-play"></span></span>
+              </div>
+              <div class="no-video-title">No generated video yet</div>
+              <div class="no-video-desc">Generated video will appear here once the workflow completes.</div>
+            </div>
+          </ng-template>
+        </div>
+      </section>
+
+      <aside class="right-column">
+        <div class="card ay-card stages-card">
+          <h3 class="card-title">Stages</h3>
+          <div class="stages-list">
+            <div
+              class="stage-item"
+              *ngFor="let s of stages"
+              [class.stage-done]="!!stageInfo[s]"
+              [class.stage-current]="currentStage === s"
+              [class.stage-creative]="s === 'Image Generation'"
+              [class.stage-final]="s === 'Upload to YouTube'"
+            >
+              <div class="si-left">
+                <div class="si-icon">
+                  <div *ngIf="stageInfo[s]" class="check"></div>
+                  <div *ngIf="!stageInfo[s]" class="dot"></div>
+                </div>
+                <div class="si-meta">
+                  <div class="si-title" [ngClass]="stageInfo[s] ? 'done-text' : ''">{{ s }}</div>
+
+                  <!-- ✅ Current stage shows "In Progress..." -->
+                  <div class="si-sub si-sub--live" *ngIf="currentStage === s && !stageInfo[s]">
+                    In Progress...
+                  </div>
+
+                  <!-- ✅ Completed stage shows stored info -->
+                  <div class="si-sub" *ngIf="stageInfo[s]">{{ stageInfo[s] }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card ay-card small-card">
+          <h3 class="card-title">Quick Actions</h3>
+          <div class="action-grid">
+            <button class="ay-btn ay-btn-outline ay-btn-sm" (click)="copyLogs()">Copy Logs</button>
+            <button class="ay-btn ay-btn-outline ay-btn-sm" (click)="clearLogs()">Clear Logs</button>
+            <button class="ay-btn ay-btn-primary ay-btn-sm" (click)="downloadLatest()">Download Latest</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
